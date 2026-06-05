@@ -7,7 +7,7 @@ Github: https://github.com/ReactiveX/RxSwift
 
 記得透過 Swift Package Manager 安裝 
 
-##Day 1：先理解 RxSwift 在解決什麼問題
+## Day 1：先理解 RxSwift 在解決什麼問題
 
 RxSwift 是把「事件」包裝成一條可以被觀察、轉換、訂閱的資料流。
 
@@ -21,7 +21,7 @@ Notification 發生
 這些都可以被 RxSwift 視為事件流。
 
 
-###要懂的觀念
+### 觀念
 
 1. Observable
 
@@ -32,11 +32,12 @@ Observable 是「會發出事件的東西」。
 let numbers = Observable.of(1, 2, 3)
 ```
 它會發出：
-
+```
 next(1)
 next(2)
 next(3)
 completed
+```
 
 2. Subscribe
 
@@ -74,5 +75,5 @@ class ViewController: UIViewController {
     let disposeBag = DisposeBag()
 }
 ```
-
-本日實作內容位於：ViewController.swift
+### 實作
+本日實作內容位於：**ViewController.swift**
