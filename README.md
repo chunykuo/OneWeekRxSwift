@@ -153,3 +153,89 @@ Observable.of("1", "abc", "3")
 
 ### 實作
 本日實作內容位於：**ViewController.swift**
+
+
+## Day 3：開始接觸 UIKit：RxCocoa、Button、TextField
+RxSwift 本身處理 reactive stream，
+但和 UIKit 綁定時，通常會搭配：
+```
+RxCocoa
+```
+
+你可以先把 RxCocoa 理解成：
+
+>讓 UIKit 元件可以用 RxSwift 的方式操作。
+
+例如：
+```
+button.rx.tap
+textField.rx.text
+label.rx.text
+```
+
+今天的重點是你要開始感覺到：
+
+>原本分散在 delegate、target-action、callback 的 UI 行為，可以被整理成一條資料流。
+
+### 觀念
+1. button.rx.tap
+
+傳統 UIKit 寫法：
+```
+button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+```
+
+RxCocoa 寫法：
+```
+button.rx.tap
+    .subscribe(onNext: {
+        print("button tapped")
+    })
+    .disposed(by: disposeBag)
+```
+
+2. textField.rx.text
+
+傳統 UIKit 可能會用 delegate 或 target-action 監聽文字變化。
+
+RxCocoa 寫法：
+```
+textField.rx.text
+    .subscribe(onNext: { text in
+        print(text)
+    })
+    .disposed(by: disposeBag)
+```
+
+不過 textField.rx.text 的型別通常是 String?，所以常見會搭配：
+```
+.orEmpty
+```
+
+```
+textField.rx.text
+    .orEmpty
+    .subscribe(onNext: { text in
+        print(text)
+    })
+    .disposed(by: disposeBag)
+```
+這樣就會變成非 optional 的 String。
+
+3. bind
+
+除了 subscribe，RxSwift / RxCocoa 很常看到 bind。
+
+例如把 TextField 的文字綁到 Label：
+```
+textField.rx.text
+    .orEmpty
+    .bind(to: label.rx.text)
+    .disposed(by: disposeBag)
+```
+這段意思是：
+
+>textField 文字變化時，自動更新 label 的文字。
+
+### 實作
+本日實作內容位於：**ViewController.swift**
