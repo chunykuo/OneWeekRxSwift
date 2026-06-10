@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 /// Day 1
 
@@ -14,13 +15,20 @@ import RxSwift
 let disposeBag = DisposeBag()
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var resultLabel: UILabel!
+    @IBOutlet weak var clearButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
 //        day1()
         
-        day2()
+//        day2()
+        
+        // day3
+        bindUI()
     }
 
     private func day1() {
@@ -46,6 +54,21 @@ class ViewController: UIViewController {
             .map { $0.uppercased() }
             .subscribe(onNext: { keyword in
                 print("搜尋關鍵字：\(keyword)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindUI() {
+        textField.rx.text
+            .orEmpty
+            .map { "你輸入的是：\($0)" }
+            .bind(to: resultLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        clearButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.textField.text = ""
+                self?.resultLabel.text = "請輸入文字"
             })
             .disposed(by: disposeBag)
     }
