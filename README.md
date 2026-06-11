@@ -239,3 +239,147 @@ textField.rx.text
 
 ### 實作
 本日實作內容位於：**ViewController.swift**
+
+
+## Day 4：理解 Subject、Relay，以及常見 UI 狀態管理
+
+要理解：
+
+>有些事件來源不是 UI 元件，也不是固定資料，而是我們自己主動丟資料進去。
+
+這時候就會用到 Subject 或 Relay。
+
+### 觀念
+
+1. Subject 是什麼？
+
+Subject 同時是：
+```
+Observable：可以被訂閱
+Observer：可以主動送出事件
+```
+
+例如：
+```
+let subject = PublishSubject<String>()
+
+subject
+    .subscribe(onNext: { value in
+        print("收到：\(value)")
+    })
+    .disposed(by: disposeBag)
+
+subject.onNext("Hello")
+subject.onNext("RxSwift")
+```
+
+結果：
+```
+收到：Hello
+收到：RxSwift
+```
+
+常見 Subject 類型
+
+PublishSubject
+
+只會收到訂閱之後發出的事件。
+```
+let subject = PublishSubject<String>()
+```
+
+適合：
+* 按鈕事件
+* 一次性通知
+* 不需要保存目前狀態的事件
+
+BehaviorSubject
+
+會保存一個目前值，新訂閱者會立刻收到目前值。
+```
+let subject = BehaviorSubject(value: "初始值")
+```
+適合：
+* 目前登入狀態
+* 目前篩選條件
+* 目前頁面資料
+
+2. Relay 是什麼？
+
+在 RxCocoa 裡常見的是：
+```
+PublishRelay
+BehaviorRelay
+```
+
+Relay 和 Subject 很像，但有一個重要差別：
+
+>Relay 不會發出 error，也不會 completed。
+
+在 UI 狀態管理裡，Relay 通常更安全、也更常用。
+
+例如：
+```
+let nameRelay = BehaviorRelay<String>(value: "")
+
+nameRelay
+    .subscribe(onNext: { name in
+        print("目前名字：\(name)")
+    })
+    .disposed(by: disposeBag)
+
+nameRelay.accept("David")
+```
+注意 Relay 是用：
+```
+.accept(...)
+```
+不是：
+```
+.onNext(...)
+```
+
+Subject / Relay 簡單比較
+| 類型 | 是否有初始值 | 是否保存目前值 | 常見用途
+| :--: | :--: |:--:|
+| PublishSubject  | 否 | 否 | 一次性事件 |
+| BehaviorSubject  | 是 | 是 | 狀態 |
+| PublishRelay  | 否 | 否 | UI 事件 |
+| BehaviorRelay  | 是 | 是 | UI 狀態 |
+
+實務上你可以先記：
+```
+事件：PublishRelay
+狀態：BehaviorRelay
+```
+
+### 實作
+本日實作內容位於：**LoginViewController.swift**
+
+#### 補充重點
+combineLatest
+```
+Observable.combineLatest(a, b)
+```
+意思是：
+
+>當 a 或 b 任一邊有新值時，就拿兩邊最新的值組合起來。
+
+很適合表單驗證。
+
+withLatestFrom
+```
+loginButton.rx.tap
+    .withLatestFrom(formValid)
+```
+意思是：
+
+>當按鈕被點擊時，取出 formValid 目前最新的值。
+
+要記住這四個觀念：
+```
+PublishRelay：事件
+BehaviorRelay：狀態
+combineLatest：組合多個狀態
+withLatestFrom：事件發生時取最新狀態
+```
