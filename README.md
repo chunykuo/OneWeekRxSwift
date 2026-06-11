@@ -340,8 +340,9 @@ nameRelay.accept("David")
 ```
 
 Subject / Relay 簡單比較
-| 類型 | 是否有初始值 | 是否保存目前值 | 常見用途
-| :--: | :--: |:--:|
+
+| 類型 | 是否有初始值 | 是否保存目前值 | 常見用途 |
+| :--: | :--: | :--: | :--: 
 | PublishSubject  | 否 | 否 | 一次性事件 |
 | BehaviorSubject  | 是 | 是 | 狀態 |
 | PublishRelay  | 否 | 否 | UI 事件 |
