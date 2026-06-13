@@ -384,3 +384,85 @@ BehaviorRelay：狀態
 combineLatest：組合多個狀態
 withLatestFrom：事件發生時取最新狀態
 ```
+
+## Day 5：做一個小型搜尋功能，理解接近實務的寫法
+
+要做一個很常見的功能：
+* 輸入搜尋文字
+* 等待使用者停止輸入
+* 避免重複搜尋
+* 模擬 API request
+* 更新畫面
+
+### 觀念
+1. debounce
+```
+.debounce(.milliseconds(300), scheduler: MainScheduler.instance)
+```
+
+意思是：
+
+>使用者停止輸入 0.3 秒後，才繼續往下送出事件。
+
+適合搜尋框，避免每打一個字就打 API。
+
+
+2. distinctUntilChanged
+```
+.distinctUntilChanged()
+```
+
+意思是：
+
+>如果新值和上一個值一樣，就不要重複送出。
+
+
+3. flatMapLatest
+```
+.flatMapLatest { keyword in
+    return search(keyword)
+}
+```
+意思是：
+
+>如果新的搜尋發生，就取消或忽略前一次尚未完成的結果，只保留最新那次。
+
+搜尋功能非常適合用 flatMapLatest。
+
+例如使用者輸入：
+a → ap → app → apple
+
+你通常只想要最後一次 apple 的搜尋結果。
+
+
+### 實作
+本日實作內容位於：**SearchViewController.swift**
+
+
+五天後你應該具備的能力
+
+完成這五天後，你應該可以做到：
+```
+看懂 Observable / subscribe / bind 的基本寫法
+知道 DisposeBag 是做什麼的
+能用 map / filter / compactMap 轉換資料流
+能用 RxCocoa 綁定 Button、TextField、Label
+知道 Subject / Relay 的差別
+能用 combineLatest 做簡單表單驗證
+能用 debounce / distinctUntilChanged / flatMapLatest 做搜尋功能
+```
+
+精簡版學習地圖
+
+你可以把這五天濃縮成這樣記：
+
+| 天數 | 主題 | 重點 |
+| :--: | :--: | :--: |
+| Day 1  | Observable / Subscribe | 理解事件流 |
+| Day 2  | map / filter / compactMap | 轉換資料流 |
+| Day 3  | RxCocoa + UIKit | 綁定 Button、TextField、Label |
+| Day 4  | Relay + combineLatest | 處理 UI 狀態與表單驗證 |
+| Day 5  | debounce + flatMapLatest | 做搜尋功能 |
+
+最重要的是：
+>RxSwift 不要用背的，要用「事件從哪裡來、經過哪些轉換、最後綁到哪裡」來理解。
